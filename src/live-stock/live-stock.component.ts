@@ -16,25 +16,9 @@ import { FormsModule, NgModel } from '@angular/forms';
   styleUrl: './live-stock.component.scss',
 })
 export class LiveStockComponent  implements OnInit{
-  
-// isActive:boolean = false;
-// stock: any;
+
   stocks: Stock[] = [
-    { symbol: 'AAPL', name: 'Apple', price: 0, previousPrice: 0, active: true },
-    {
-      symbol: 'GOOGL',
-      name: 'Alphabet',
-      price: 0,
-      previousPrice: 0,
-      active: true,
-    },
-    {
-      symbol: 'MSFT',
-      name: 'Microsoft',
-      price: 0,
-      previousPrice: 0,
-      active: true,
-    },
+    { symbol: 'AAPL', name: 'AAPL', price: 0, previousPrice: 0, active: true },
     {
       symbol: 'BINANCE:BTCUSDT',
       name: 'BINANCE:BTCUSDT',
@@ -42,6 +26,21 @@ export class LiveStockComponent  implements OnInit{
       previousPrice: 0,
       active: true,
     },
+    {
+      symbol: 'IC MARKETS:1',
+      name: 'IC MARKETS:1',
+      price: 0,
+      previousPrice: 0,
+      active: true,
+    },
+    {
+      symbol: 'TSLA',
+      name: 'Tesla, Inc.',
+      price: 0,
+      previousPrice: 0,
+      active: true,
+    },
+    
   ];
   constructor(private wsService: LiveStockWebsocketService) {}
 
@@ -69,26 +68,19 @@ export class LiveStockComponent  implements OnInit{
     if (stock.active) {
       this.wsService.getMessages();
     } else {
-      // this.wsService.unsubscribeFromStock(stock.symbol);
+      this.wsService.unsubscribe(stock.symbol);
     }
   }
 
-  getCardClass(stock: Stock): string {
-    if (!stock.active) return 'inactive';
+  // getCardClass(stock: Stock): string {
+  //   if (!stock.active) return 'inactive';
 
-    const priceDiff = (stock.price - stock.previousPrice);
-    // if (stock.price > stock.previousPrice) return 'up';
-    // if (stock.price == stock.previousPrice) return 'up';
-    // if (stock.price < stock.previousPrice) return 'down';
-
-    // console.log("priceDiff",priceDiff +' DD'+stock.price,stock.previousPrice)
-    // console.log("TTTTT",118237.36 - 118237.37);
-    // -0.00999999999476131
-    if(priceDiff == 0) return 'up'
-    if (priceDiff > 0) return 'up';
-    if (priceDiff < 0) return 'down';
-    return '';
-  }
+  //   const priceDiff = (stock.price - stock.previousPrice);
+  //   if(priceDiff == 0) return 'up'
+  //   if (priceDiff > 0) return 'up';
+  //   if (priceDiff < 0) return 'down';
+  //   return '';
+  // }
 
 
   // ..................................................
