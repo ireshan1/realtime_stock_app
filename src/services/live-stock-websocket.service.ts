@@ -51,7 +51,7 @@ export class LiveStockWebsocketService {
 
  private socket!: WebSocket;
   private messageSubject = new Subject<any>();
-  private readonly FINNHUB_URL = 'wss://ws.finnhub.io?symboles="AAPL"&token=d205nnhr01qmbi8r7qogd205nnhr01qmbi8r7qp0';
+  private readonly FINNHUB_URL = 'wss://ws.finnhub.io?token=d205nnhr01qmbi8r7qogd205nnhr01qmbi8r7qp0';
 
   constructor() {
     this.connect();
@@ -63,10 +63,8 @@ export class LiveStockWebsocketService {
     this.socket.addEventListener('open', () => {
       // Subscribe to symbols
       this.subscribe('AAPL');
-      this.subscribe('EXCOF');
-      this.subscribe('UPOW');
-      this.subscribe('IC MARKETS:1');
-      this.subscribe('BINANCE:BTCUSDT');
+      this.subscribe('GOOGL');
+      this.subscribe('MSFT');
       this.subscribe('TSLA');
     });
 

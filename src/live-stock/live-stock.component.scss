@@ -98,7 +98,7 @@
   width: 200px;
   padding: 1rem;
   border-radius: 8px;
-  color: #fff;
+  color:#34495e;
   transition: background 0.3s;
   display: flex;
   flex-direction: column;
@@ -110,6 +110,7 @@
     // justify-content: space-between;
     font-weight: bold;
     text-align: center;
+    font-size: 20px;
   }
 
   .price {
@@ -185,4 +186,11 @@
     transform: translateX(53px); /* Move the knob 26px to the right */
     background-color: #1abc9c;
   }
+}
+
+.daily-price {
+  font-size: 13px;
+  text-align: center;
+  font-weight: 700;
+  margin: 5px 0px 5px 0;
 }

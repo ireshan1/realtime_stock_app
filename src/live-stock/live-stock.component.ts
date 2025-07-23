@@ -7,42 +7,59 @@ import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Stock } from '../model/stock.model';
 import { FormsModule, NgModel } from '@angular/forms';
+import { StockQuoteService } from '../services/stock-quote.service';
 
 @Component({
   selector: 'app-live-stock',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './live-stock.component.html',
   styleUrl: './live-stock.component.scss',
 })
-export class LiveStockComponent  implements OnInit{
-
+export class LiveStockComponent implements OnInit {
+  symbol: string = 'AAPL,TSLA';
   stocks: Stock[] = [
-    { symbol: 'AAPL', name: 'AAPL', price: 0, previousPrice: 0, active: true },
     {
-      symbol: 'BINANCE:BTCUSDT',
-      name: 'BINANCE:BTCUSDT',
+      symbol: 'AAPL',
+      name: 'Apple Inc',
       price: 0,
       previousPrice: 0,
+      daily_high_price: 0,
+      daily_low_price: 0,
       active: true,
     },
     {
-      symbol: 'IC MARKETS:1',
-      name: 'IC MARKETS:1',
+      symbol: 'GOOGL',
+      name: 'Alphabet Inc',
       price: 0,
       previousPrice: 0,
+      daily_high_price: 0,
+      daily_low_price: 0,
+      active: true,
+    },
+    {
+      symbol: 'MSFT',
+      name: 'Microsoft',
+      price: 0,
+      previousPrice: 0,
+      daily_high_price: 0,
+      daily_low_price: 0,
       active: true,
     },
     {
       symbol: 'TSLA',
-      name: 'Tesla, Inc.',
+      name: 'Tesla Inc',
       price: 0,
       previousPrice: 0,
+      daily_high_price: 0,
+      daily_low_price: 0,
       active: true,
     },
-    
   ];
-  constructor(private wsService: LiveStockWebsocketService) {}
+  constructor(
+    private wsService: LiveStockWebsocketService,
+    private stkService: StockQuoteService
+  ) {}
 
   ngOnInit() {
     this.stocks.forEach((stock) => {
@@ -55,16 +72,29 @@ export class LiveStockComponent  implements OnInit{
         if (stock && stock.active) {
           stock.previousPrice = stock.price;
           stock.price = item.p;
-
-          console.log("stock",stock);
+          console.log('stock', stock);
         }
       });
     });
+
+    this.stkService
+      .getMultipleQuotes(['AAPL', 'GOOGL', 'MSFT', 'TSLA'])
+      .subscribe((results: any[]) => {
+        results.forEach((item, index) => {
+          if (this.stocks[index]) {
+            this.stocks[index].daily_high_price = item?.h;
+            this.stocks[index].daily_low_price = item?.l;
+          }
+        });
+
+        console.log('results', results);
+        console.log('this.stocks', this.stocks);
+      });
   }
 
   toggleStock(stock: Stock) {
     stock.active = !stock.active;
-    console.log("stock",stock);
+    console.log('stock', stock);
     if (stock.active) {
       this.wsService.getMessages();
     } else {
@@ -81,7 +111,6 @@ export class LiveStockComponent  implements OnInit{
   //   if (priceDiff < 0) return 'down';
   //   return '';
   // }
-
 
   // ..................................................
   // messages: { symbol: string; price: number; timestamp: string }[] = [];
@@ -112,6 +141,4 @@ export class LiveStockComponent  implements OnInit{
 
   //   console.log('Live Stock', this.messages);
   // }
-
-
 }
