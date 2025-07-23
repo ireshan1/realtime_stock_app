@@ -1,14 +1,14 @@
-<div class="container">
-  <div class="card" style="background-color: #2ecc71">
-    <h1>FB</h1>
-    <p>$36.06</p>
-    <p>+12.56</p>
-    <p>(34.08%)</p>
-    <h5>Last Trade</h5>
-    <p>6.26:07pm</p>
-    <h4>VOL: 8640</h4>
+<!-- <div class="container">
+  <div *ngFor="let msg of messages" class="card" style="background-color: #2ecc71">
+    <h1>{{msg.symbol}}</h1>
+    <p>${{msg.price}}</p>
+    <p style="margin: 0">+12.56</p>
+    <p style="margin-bottom: 5; margin-top: 0">(34.08%)</p>
+    <h4 style="margin: 0">Last Trade</h4>
+    <p style="margin: 0">6.26:07pm</p>
+    <h3>VOL: 8640</h3>
 
-    <!--Toggle Switch-->
+   
     <label class="switch">
       <input type="checkbox" />
       <span class="slider round"></span>
@@ -18,17 +18,66 @@
   <div class="card" style="background-color: #ecf0f1">
     <h1>FB</h1>
     <p>$36.06</p>
-    <p style="margin-bottom: 0">+12.56</p>
-    <p>(34.08%)</p>
-    <h5>Last Trade</h5>
-    <p style="margin-bottom: 0">6.26:07pm</p>
-    <h4>VOL: 8640</h4>
+    <p style="margin: 0">+12.56</p>
+    <p style="margin-bottom: 5; margin-top: 0">(34.08%)</p>
+    <h4 style="margin: 0">Last Trade</h4>
+    <p style="margin: 0">6.26:07pm</p>
+    <h3>VOL: 8640</h3>
 
-    <!--Toggle Switch-->
-   <label class="switch">
+ 
+    <label class="switch">
       <input type="checkbox" />
       <span class="slider round"></span>
       <span class="slider-text"></span>
     </label>
+  </div>
+
+
+  <div class="card">
+  <h2>Live Stock Prices</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Price (USD)</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let msg of messages">
+        <td>{{ msg.symbol }}</td>
+        <td>{{ msg.price }}</td>
+        <td>{{ msg.timestamp }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div> -->
+
+<div class="dashboard">
+  <div
+    class="stock-card"
+    *ngFor="let stock of stocks"
+    [ngClass]="{
+      inactive: !stock.active,
+      up:
+        (stock.active && stock.price > stock.previousPrice) ||
+        stock.price == stock.previousPrice,
+      down: stock.active && stock.price < stock.previousPrice
+    }"
+  >
+    <div class="header">
+     {{ stock.name }}
+    </div>
+    <div class="price">${{ stock.price | number : "1.2-2" }}</div>
+    <div class="toggle-switch">
+      <button
+        class="toggle-btn"
+        [class.active]="stock.active"
+        (click)="toggleStock(stock)"
+      >
+        {{ stock.active ? "ON" : "OFF" }}
+      </button>
+    </div>
   </div>
 </div>
