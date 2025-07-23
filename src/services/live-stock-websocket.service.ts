@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
+import { environment } from '../environments/environment';
 
 export interface StockData {
   symbol: string;
@@ -51,7 +52,7 @@ export class LiveStockWebsocketService {
 
  private socket!: WebSocket;
   private messageSubject = new Subject<any>();
-  private readonly FINNHUB_URL = 'wss://ws.finnhub.io?token=d205nnhr01qmbi8r7qogd205nnhr01qmbi8r7qp0';
+  private readonly FINNHUB_URL = `wss://ws.finnhub.io?token=${environment.api_key}`;
 
   constructor() {
     this.connect();

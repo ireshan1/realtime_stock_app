@@ -17,7 +17,7 @@ import { StockQuoteService } from '../services/stock-quote.service';
   styleUrl: './live-stock.component.scss',
 })
 export class LiveStockComponent implements OnInit {
-  symbol: string = 'AAPL,TSLA';
+  
   stocks: Stock[] = [
     {
       symbol: 'AAPL',
@@ -26,6 +26,8 @@ export class LiveStockComponent implements OnInit {
       previousPrice: 0,
       daily_high_price: 0,
       daily_low_price: 0,
+      fifty_two_week_high_price: 0,
+      fifty_two_week_low_price: 0,
       active: true,
     },
     {
@@ -35,6 +37,8 @@ export class LiveStockComponent implements OnInit {
       previousPrice: 0,
       daily_high_price: 0,
       daily_low_price: 0,
+      fifty_two_week_high_price: 0,
+      fifty_two_week_low_price: 0,
       active: true,
     },
     {
@@ -44,6 +48,8 @@ export class LiveStockComponent implements OnInit {
       previousPrice: 0,
       daily_high_price: 0,
       daily_low_price: 0,
+      fifty_two_week_high_price: 0,
+      fifty_two_week_low_price: 0,
       active: true,
     },
     {
@@ -53,6 +59,8 @@ export class LiveStockComponent implements OnInit {
       previousPrice: 0,
       daily_high_price: 0,
       daily_low_price: 0,
+      fifty_two_week_high_price: 0,
+      fifty_two_week_low_price: 0,
       active: true,
     },
   ];
@@ -62,23 +70,23 @@ export class LiveStockComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.stocks.forEach((stock) => {
-      // this.wsService.subscribeToStock(stock.symbol);
-    });
-
     this.wsService.getMessages().subscribe((data: any) => {
       data?.data?.forEach((item: any) => {
         const stock = this.stocks.find((s) => s.symbol === item.s);
         if (stock && stock.active) {
           stock.previousPrice = stock.price;
           stock.price = item.p;
-          console.log('stock', stock);
         }
       });
     });
 
+    this.getDailyPrice();
+    this.getWeeklyPrice();
+  }
+
+  getDailyPrice(): void {
     this.stkService
-      .getMultipleQuotes(['AAPL', 'GOOGL', 'MSFT', 'TSLA'])
+      .getMultipleQuotes()
       .subscribe((results: any[]) => {
         results.forEach((item, index) => {
           if (this.stocks[index]) {
@@ -86,9 +94,25 @@ export class LiveStockComponent implements OnInit {
             this.stocks[index].daily_low_price = item?.l;
           }
         });
+        // console.log('results', results);
+        // console.log('this.stocks', this.stocks);
+      });
+  }
 
-        console.log('results', results);
-        console.log('this.stocks', this.stocks);
+  getWeeklyPrice(): void {
+    this.stkService
+      .getMultipleWeeklyPirce()
+      .subscribe((results: any) => {
+        results.forEach((item: any) => {
+          const stock = this.stocks.find((s) => s.symbol == item?.symbol);
+
+          if (stock && stock.active) {
+            stock.fifty_two_week_high_price = item?.metric?.['52WeekHigh'];
+            stock.fifty_two_week_low_price = item?.metric?.['52WeekLow'];
+          }
+        });
+        // console.log('results', results);
+        console.log('stocks', this.stocks);
       });
   }
 
@@ -96,7 +120,7 @@ export class LiveStockComponent implements OnInit {
     stock.active = !stock.active;
     console.log('stock', stock);
     if (stock.active) {
-      this.wsService.getMessages();
+      this.wsService.subscribe(stock.symbol);
     } else {
       this.wsService.unsubscribe(stock.symbol);
     }
@@ -110,35 +134,5 @@ export class LiveStockComponent implements OnInit {
   //   if (priceDiff > 0) return 'up';
   //   if (priceDiff < 0) return 'down';
   //   return '';
-  // }
-
-  // ..................................................
-  // messages: { symbol: string; price: number; timestamp: string }[] = [];
-
-  // private sub!: Subscription;
-  // constructor(private liveStockWebSocketService: LiveStockWebsocketService) {}
-  // ngOnInit() {
-  //   this.sub = this.liveStockWebSocketService
-  //     .getMessages()
-  //     .subscribe((data) => {
-  //       console.log("Data",data);
-  //       if (data.type === 'trade') {
-  //         // Extract symbol and price from each trade
-  //         for (const trade of data.data) {
-  //           this.messages.unshift({
-  //             symbol: trade.s,
-  //             price: trade.p,
-  //             timestamp: new Date(trade.t).toLocaleTimeString(),
-  //           });
-  //         }
-
-  //         // Optional: limit list to last 10 updates
-  //         if (this.messages.length > 1) {
-  //           this.messages = this.messages.slice(0, 1);
-  //         }
-  //       }
-  //     });
-
-  //   console.log('Live Stock', this.messages);
   // }
 }
