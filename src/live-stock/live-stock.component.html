@@ -2,13 +2,9 @@
   <div
     class="stock-card"
     *ngFor="let stock of stocks"
-    [ngClass]="{
-      inactive: !stock.active,
-      up:
-        (stock.active && stock.price > stock.previousPrice) ||
-        stock.price == stock.previousPrice,
-      down: stock.active && stock.price < stock.previousPrice
-    }"
+    [ngClass]="
+     getCardClass(stock)
+    "
   >
     <div class="header">
       {{ stock.name }}
@@ -19,15 +15,15 @@
         High Price : {{ stock?.daily_high_price | number : "1.2-2" }} (daily)
       </p>
       <p class="daily-price">
-        Low Price : {{ stock?.daily_high_price | number : "1.2-2" }} (daily)
+        Low Price : {{ stock?.daily_low_price | number : "1.2-2" }} (daily)
       </p>
     </div>
     <div class="mobile-only">
       <p class="weekly-price">
-        High Price : {{ stock?.fifty_two_week_high_price | number : "1.2-2" }} (52 Weeks)
+        High Price : {{ stock?.fifty_two_week_high_price | number : "1.2-2" }} (52 weeks)
       </p>
       <p class="weekly-price">
-        Low Price : {{ stock?.fifty_two_week_low_price | number : "1.2-2" }} (52 Weeks)
+        Low Price : {{ stock?.fifty_two_week_low_price | number : "1.2-2" }} (52 weeks)
       </p>
     </div>
 

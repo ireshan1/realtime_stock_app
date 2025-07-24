@@ -50,7 +50,7 @@ export class LiveStockComponent implements OnInit {
       active: true,
     },
     {
-      symbol: 'BINANCE:BTCUSDT',
+      symbol: 'TSLA',
       name: 'Tesla Inc',
       price: 0,
       previousPrice: 0,
@@ -71,16 +71,15 @@ export class LiveStockComponent implements OnInit {
     this.webSocketService.subscribe('AAPL');
     this.webSocketService.subscribe('GOOGL');
     this.webSocketService.subscribe('MSFT');
-    this.webSocketService.subscribe('BINANCE:BTCUSDT'); //TSLA
+    this.webSocketService.subscribe('TSLA');
 
-    this.getLiveData();// Listen for incoming data
+    this.getLiveData(); // Listen for incoming data
     this.getDailyPrice(); //Get Daily Price
     this.getWeeklyPrice(); //Get 52 Weeks Price
   }
 
-
-// Listen for incoming data
-  getLiveData():void{
+  // Listen for incoming data
+  getLiveData(): void {
     this.subscription = this.webSocketService
       .getMessages()
       .subscribe((data) => {
@@ -122,13 +121,25 @@ export class LiveStockComponent implements OnInit {
   }
 
   //Swicth OFF and Switch ON specific stock
-  toggleStock(stock: Stock):void {
+  toggleStock(stock: Stock): void {
     stock.active = !stock.active;
     if (stock.active) {
       this.webSocketService.subscribe(stock.symbol);
     } else {
       this.webSocketService.unsubscribe(stock.symbol);
     }
+  }
+
+  getCardClass(stock: Stock): string {
+    if (!stock.active) return 'inactive';
+
+    const price = Number(stock.price.toFixed(2));
+    const previousPrice = Number(stock.previousPrice.toFixed(2));
+    const priceDiff = price - previousPrice;
+    if (priceDiff == 0) return 'up';
+    if (priceDiff > 0) return 'up';
+    if (priceDiff < 0) return 'down';
+    return '';
   }
 
   ngOnDestroy(): void {
