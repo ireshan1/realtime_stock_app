@@ -1,12 +1,9 @@
-import { Component, Input, NgModule, OnInit } from '@angular/core';
-import {
-  LiveStockWebsocketService,
-  StockData,
-} from '../services/live-stock-websocket.service';
+import { Component, OnInit } from '@angular/core';
+import { LiveStockWebsocketService } from '../services/live-stock-websocket.service';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Stock } from '../model/stock.model';
-import { FormsModule, NgModel } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { StockQuoteService } from '../services/stock-quote.service';
 
 @Component({
@@ -17,7 +14,7 @@ import { StockQuoteService } from '../services/stock-quote.service';
   styleUrl: './live-stock.component.scss',
 })
 export class LiveStockComponent implements OnInit {
-  
+  private subscription!: Subscription;
   stocks: Stock[] = [
     {
       symbol: 'AAPL',
@@ -53,7 +50,7 @@ export class LiveStockComponent implements OnInit {
       active: true,
     },
     {
-      symbol: 'TSLA',
+      symbol: 'BINANCE:BTCUSDT',
       name: 'Tesla Inc',
       price: 0,
       previousPrice: 0,
@@ -65,74 +62,76 @@ export class LiveStockComponent implements OnInit {
     },
   ];
   constructor(
-    private wsService: LiveStockWebsocketService,
+    private webSocketService: LiveStockWebsocketService,
     private stkService: StockQuoteService
   ) {}
 
   ngOnInit() {
-    this.wsService.getMessages().subscribe((data: any) => {
-      data?.data?.forEach((item: any) => {
-        const stock = this.stocks.find((s) => s.symbol === item.s);
-        if (stock && stock.active) {
-          stock.previousPrice = stock.price;
-          stock.price = item.p;
+    // Subscribe to multiple stock symbols
+    this.webSocketService.subscribe('AAPL');
+    this.webSocketService.subscribe('GOOGL');
+    this.webSocketService.subscribe('MSFT');
+    this.webSocketService.subscribe('BINANCE:BTCUSDT'); //TSLA
+
+    this.getLiveData();// Listen for incoming data
+    this.getDailyPrice(); //Get Daily Price
+    this.getWeeklyPrice(); //Get 52 Weeks Price
+  }
+
+
+// Listen for incoming data
+  getLiveData():void{
+    this.subscription = this.webSocketService
+      .getMessages()
+      .subscribe((data) => {
+        // console.log('Live stock update:', data.data);
+        data?.data?.forEach((item: any) => {
+          const stock = this.stocks.find((s) => s.symbol === item.s);
+          if (stock && stock.active) {
+            stock.previousPrice = stock.price;
+            stock.price = item.p;
+          }
+        });
+      });
+  }
+
+  //Get Daily Price
+  getDailyPrice(): void {
+    this.stkService.getMultipleQuotes().subscribe((results: any[]) => {
+      results.forEach((item, index) => {
+        if (this.stocks[index]) {
+          this.stocks[index].daily_high_price = item?.h;
+          this.stocks[index].daily_low_price = item?.l;
         }
       });
     });
-
-    this.getDailyPrice();
-    this.getWeeklyPrice();
   }
 
-  getDailyPrice(): void {
-    this.stkService
-      .getMultipleQuotes()
-      .subscribe((results: any[]) => {
-        results.forEach((item, index) => {
-          if (this.stocks[index]) {
-            this.stocks[index].daily_high_price = item?.h;
-            this.stocks[index].daily_low_price = item?.l;
-          }
-        });
-        // console.log('results', results);
-        // console.log('this.stocks', this.stocks);
-      });
-  }
-
+  //Get 52 Weeks Price
   getWeeklyPrice(): void {
-    this.stkService
-      .getMultipleWeeklyPirce()
-      .subscribe((results: any) => {
-        results.forEach((item: any) => {
-          const stock = this.stocks.find((s) => s.symbol == item?.symbol);
+    this.stkService.getMultipleWeeklyPrices().subscribe((results: any) => {
+      results.forEach((item: any) => {
+        const stock = this.stocks.find((s) => s.symbol == item?.symbol);
 
-          if (stock && stock.active) {
-            stock.fifty_two_week_high_price = item?.metric?.['52WeekHigh'];
-            stock.fifty_two_week_low_price = item?.metric?.['52WeekLow'];
-          }
-        });
-        // console.log('results', results);
-        console.log('stocks', this.stocks);
+        if (stock && stock.active) {
+          stock.fifty_two_week_high_price = item?.metric?.['52WeekHigh'];
+          stock.fifty_two_week_low_price = item?.metric?.['52WeekLow'];
+        }
       });
+    });
   }
 
-  toggleStock(stock: Stock) {
+  //Swicth OFF and Switch ON specific stock
+  toggleStock(stock: Stock):void {
     stock.active = !stock.active;
-    console.log('stock', stock);
     if (stock.active) {
-      this.wsService.subscribe(stock.symbol);
+      this.webSocketService.subscribe(stock.symbol);
     } else {
-      this.wsService.unsubscribe(stock.symbol);
+      this.webSocketService.unsubscribe(stock.symbol);
     }
   }
 
-  // getCardClass(stock: Stock): string {
-  //   if (!stock.active) return 'inactive';
-
-  //   const priceDiff = (stock.price - stock.previousPrice);
-  //   if(priceDiff == 0) return 'up'
-  //   if (priceDiff > 0) return 'up';
-  //   if (priceDiff < 0) return 'down';
-  //   return '';
-  // }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe(); // Clean up subscription
+  }
 }

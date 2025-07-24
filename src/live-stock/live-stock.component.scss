@@ -1,91 +1,3 @@
-// .container {
-//     display: flex;
-//     text-align: center;
-//     gap: 20px;
-//     margin: 17px;
-//     flex-direction: row;
-// }
-
-// .card {
-//     padding: 0px 40px 10px 40px;
-//     border-radius: 10px;
-//     color:#34495e; 
-//     font-weight: 500;
-// }
-
-
-
-// .switch {
-//   position: relative;
-//   display: inline-block;
-//   width: 75px;
-//   height: 34px;
-// }
-
-// .switch input {
-//   opacity: 0;
-//   width: 0;
-//   height: 0;
-// }
-
-// .slider {
-//   position: absolute;
-//   cursor: pointer;
-//   top: 0;
-//   left: 0;
-//   right: 0;
-//   bottom: 0;
-//   background-color: #7f8c9a;
-//   transition: 0.4s;
-//   border-radius: 34px;
-// }
-
-// .slider:before {
-//   position: absolute;
-//   content: "";
-//   height: 26px;
-//   width: 26px;
-//   left: 4px;
-//   bottom: 4px;
-//   background-color: #bdc3c7;
-//   transition: 0.4s;
-//   border-radius: 50%;
-// }
-
-// /* Move knob to right when checked */
-// input:checked + .slider:before {
-//   transform: translateX(38px);
-//   background-color: #1abc9c;
-// }
-
-// /* Background color when checked */
-// input:checked + .slider {
-//   background-color: #34495e;
-// }
-
-// /* ON/OFF text inside the switch */
-// .slider::after {
-//   content: "OFF";
-//   color: #ffffff;
-//   font-size: 12px;
-//   font-weight: bold;
-//   position: absolute;
-//   right: 10px;
-//   top: 10px;
-// }
-
-// input:checked + .slider::after {
-//   content: "ON";
-//   left: 10px;
-//   right: auto;
-//   top: 10px;
-//   color: #1abc9c;
-//   font-weight: 600;
-// }
-
-// .......................................................
-
-
 .dashboard {
   display: flex;
   flex-wrap: wrap;
@@ -120,21 +32,21 @@
   }
 
   &.up {
-    background-color: #4caf50;
+    background-color: #2ecc71;
   }
 
   &.down {
-    background-color: #f44336;
+    background-color: #e74c3c;
   }
 
   &.inactive {
-    background-color: #9e9e9e;
+    background-color: #ecf0f1;
   }
 }
 
 @media (max-width: 600px) {
   .dashboard {
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
   }
 
@@ -145,7 +57,7 @@
 
 
 
-
+//Toggle button css 
 .toggle-switch {
   display: flex;
   justify-content: center;
@@ -157,11 +69,13 @@
   width: 85px;
   height: 34px;
   margin: 0.5rem;
-  background-color: #ccc;
+  background-color: #bdc3c7;
   border-radius: 34px;
   border: none;
   cursor: pointer;
   transition: background-color 0.3s ease; /* Background transition */
+  font-weight: 700;
+  color: #fff;
 
   /* Apply transition to the active state */
   &.active {
@@ -177,7 +91,7 @@
     left: 4px;
     width: 24px;
     height: 24px;
-    background-color: white;
+    background-color: #7f8c9a;
     border-radius: 50%;
     transition: transform 0.3s ease; /* Smooth knob movement */
   }
@@ -194,4 +108,28 @@
   text-align: center;
   font-weight: 700;
   margin: 2px 0px;
+}
+.weekly-price {
+  font-size: 13px;
+  text-align: center;
+  font-weight: 700;
+  margin: 2px 0px;
+}
+
+.mobile-only {
+  margin-top: 8px;
+}
+
+/* Show .desktop-only on desktop (min-width 768px) */
+@media (min-width: 768px) {
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Show .mobile-only on mobile (max-width 767.98px) */
+@media (max-width: 767.98px) {
+  .mobile-only {
+    display: none;
+  }
 }
